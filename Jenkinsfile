@@ -9,6 +9,19 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube analysis') {
+            def scannerHome = tool 'sonar-scanner';
+            withSonarQubeEnv('sonarqube-server') { // If you have configured more than one global server connection, you can specify its name
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=ejemplo-maven -Dsonar.sources=src -Dsonar.java.binaries=build"
+            }
+        }
+        stage('Compile') {
+            steps {
+                script {
+                    sh './mvnw clean compile -e'
+                }
+            }
+        }
         stage('Test') {
             steps {
                 script {
